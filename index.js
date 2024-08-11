@@ -11,13 +11,14 @@ const exec = require("child_process").exec
 // FFMPEG
 
 const convertImageToPng = (path) => {
-    exec(`ffmpeg -i ${path} ${path}.png`, (error) => {
-        if (error) {
-            throw error
-        }
-    })
+    // exec(`ffmpeg -i ${path} ${path}.png`, (error) => {
+    //     if (error) {
+    //         throw error
+    //     }
+    // })
 
-    exec(`trash ${path}`, (error) => {
+
+    exec(`mv ${path} ${path}.png`, (error) => {
         if (error) {
             throw error
         }
@@ -39,21 +40,21 @@ db.connect().then(() => {
 
 // Connecting to a broadcast server
 
-// const broadcastWS = new WebSocket("ws://url")
-//
-// broadcastWS.onerror(console.error)
-//
-// broadcastWS.onopen(() => {
-//     broadcastWS.send({ event: "auth", data: jwt.sign("http server", privateKey) })
-// })
-//
-// broadcastWS.onmessage(async (msg) => {
-//     switch (msg.event) {
-//         case "message":
-//             await db.query(`insert into messages values (default, ${msg.data.message}, ${msg.data.type}, ${msg.data.username}, ${msg.data.date}`)
-//     }
-//
-// })
+const broadcastWS = new WebSocket("ws://cha4-broadcast.onrender.com")
+
+broadcastWS.onerror(console.error)
+
+broadcastWS.onopen(() => {
+    broadcastWS.send({ event: "auth", data: jwt.sign("http server", privateKey) })
+})
+
+broadcastWS.onmessage(async (msg) => {
+    switch (msg.event) {
+        case "message":
+            await db.query(`insert into messages values (default, ${msg.data.message}, ${msg.data.type}, ${msg.data.username}, ${msg.data.date}`)
+    }
+
+})
 
 // Initializing express app
 
@@ -143,7 +144,7 @@ app.get("/api/messages*", checkAuthorized, async (req, res) => {
     }
 })
 
-app.get("/api/images*", checkAuthorized, checkQueryParams(["id"]), async (req, res) => {
+app.get("/api/images*", checkQueryParams(["id"]), async (req, res) => {
     try {
         const path = "./data/images/" + req.query.id + ".png"
 
@@ -155,7 +156,7 @@ app.get("/api/images*", checkAuthorized, checkQueryParams(["id"]), async (req, r
             return
         }
 
-        res.sendFile("./data/images/" + req.query.id + ".png")
+        res.sendFile(__dirname + "data/images/" + req.query.id + ".png")
     } catch (e) {
         console.error(e)
         res.sendStatus(500)
