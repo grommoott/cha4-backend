@@ -42,13 +42,13 @@ db.connect().then(() => {
 
 const broadcastWS = new WebSocket("ws://cha4-broadcast.onrender.com")
 
-broadcastWS.onerror(console.error)
+broadcastWS.on("error", console.error)
 
-broadcastWS.onopen(() => {
+broadcastWS.on("open", () => {
     broadcastWS.send({ event: "auth", data: jwt.sign("http server", privateKey) })
 })
 
-broadcastWS.onmessage(async (msg) => {
+broadcastWS.on("message", async (msg) => {
     switch (msg.event) {
         case "message":
             await db.query(`insert into messages values (default, ${msg.data.message}, ${msg.data.type}, ${msg.data.username}, ${msg.data.date}`)
