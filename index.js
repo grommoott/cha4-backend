@@ -125,7 +125,7 @@ const imagesUpload = multer({ dest: "./data/images/" })
 
 // Get requests
 
-app.get("/api/messages*", checkAuthorized, async (req, res) => {
+app.get("/api/messages*", async (req, res) => {
     try {
         let page
 
