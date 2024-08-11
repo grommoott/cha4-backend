@@ -137,7 +137,7 @@ app.get("/api/messages*", async (req, res) => {
 
         const messages = await db.query(`select * from messages order by date desc limit 50 offset ${50 * page}`)
 
-        res.send(messages)
+        res.send(messages.rows)
     } catch (e) {
         console.error(e)
         res.sendStatus(500)
